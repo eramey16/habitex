@@ -30,10 +30,10 @@ class HabZoneEvaluator:
             semimajor = explorer._orb_dist(row)
             t_star = row['st_teff'] - 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
-            cons_inner_stflux = (sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - row['pl_orbeccen']**2)
-            cons_outer_stflux = (sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - row['pl_orbeccen']**2)
-            cons_inner_rad = np.sqrt((10**row['st_lum'])/cons_inner_stflux)
-            cons_outer_rad = np.sqrt((10**row['st_lum'])/cons_outer_stflux)
+            cons_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
+            cons_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
+            cons_inner_rad = np.sqrt(float((10**row['st_lum'])/cons_inner_stflux))
+            cons_outer_rad = np.sqrt(float((10**row['st_lum'])/cons_outer_stflux))
             row['Conservative Inner Radius (AU)'] = cons_inner_rad
             row['Conservative Outer Radius (AU)'] = cons_outer_rad
             if pl_stflux > cons_outer_stflux and pl_stflux < cons_inner_stflux:
@@ -65,10 +65,10 @@ class HabZoneEvaluator:
             semimajor = explorer._orb_dist(row)
             t_star = row['st_teff'] - 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
-            opt_inner_stflux = (sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - row['pl_orbeccen']**2)
-            opt_outer_stflux = (sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - row['pl_orbeccen']**2)
-            opt_inner_rad = np.sqrt((10**row['st_lum'])/opt_inner_stflux)
-            opt_outer_rad = np.sqrt((10**row['st_lum'])/opt_outer_stflux)
+            opt_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
+            opt_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
+            opt_inner_rad = np.sqrt(float((10**row['st_lum'])/opt_inner_stflux))
+            opt_outer_rad = np.sqrt(float((10**row['st_lum'])/opt_outer_stflux))
             row['Optimistic Inner Radius (AU)'] = opt_inner_rad
             row['Optimistic Outer Radius (AU)'] = opt_outer_rad
             if pl_stflux > opt_outer_stflux and pl_stflux < opt_inner_stflux:
