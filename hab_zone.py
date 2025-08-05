@@ -28,7 +28,7 @@ class HabZoneEvaluator:
         data['In Conservative Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
         for index, row in data.iterrows():
             semimajor = explorer._orb_dist(row)
-            t_star = row['st_teff'] - 5780
+            t_star = float(row['st_teff']) - 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
             cons_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
             cons_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
@@ -63,7 +63,7 @@ class HabZoneEvaluator:
         data['In Optimistic Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
         for index, row in data.iterrows():
             semimajor = explorer._orb_dist(row)
-            t_star = row['st_teff'] - 5780
+            t_star = float(row['st_teff'])- 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
             opt_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
             opt_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
