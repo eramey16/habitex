@@ -31,7 +31,7 @@ class ArchiveExplorer:
         self.results = tab
         return tab
     
-    def _orbital_distance():
+    def _orbital_distance(self):
         """ Calculates orbital distance from orbital period """
 
         r = np.cbrt((self.G * self.results.pl_masse / 4 / np.pi**2) 
