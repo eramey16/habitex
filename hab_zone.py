@@ -23,9 +23,9 @@ class HabZoneEvaluator:
         d_out = -5.2983e-16
         explorer = habitex.ArchiveExplorer()
         data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
-        data['Conservative Inner Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
-        data['Conservative Outer Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
-        data['In Conservative Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
+        inner_rads = []
+        outer_rads = []
+        in_hz = []
         for index, row in data.iterrows():
             semimajor = explorer._orb_dist(row)
             t_star = float(row['st_teff']) - 5780
@@ -34,12 +34,15 @@ class HabZoneEvaluator:
             cons_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
             cons_inner_rad = np.sqrt(float((10**row['st_lum'])/cons_inner_stflux))
             cons_outer_rad = np.sqrt(float((10**row['st_lum'])/cons_outer_stflux))
-            row['Conservative Inner Radius (AU)'] = cons_inner_rad
-            row['Conservative Outer Radius (AU)'] = cons_outer_rad
+            inner_rads.append(cons_inner_rad)
+            outer_rads.append(cons_outer_rad)
             if pl_stflux > cons_outer_stflux and pl_stflux < cons_inner_stflux:
-                row['In Conservative Habitable Zone'] = True
+                in_hz.append(True)
             else:
-                row['In Conservative Habitable Zone'] = False
+                in_hz.append(False)
+        data['Conservative Inner Radius (AU)'] = inner_rads
+        data['Conservative Outer Radius (AU)'] = outer_rads
+        data['In Conservative Habitable Zone'] = in_hz
         return data
 
     def optimistic_habzone(self, hostname=None, t_eff=None, dec=None, period=None, mandr=None):
@@ -58,9 +61,9 @@ class HabZoneEvaluator:
         d_out = -4.8997e-16
         explorer = habitex.ArchiveExplorer()
         data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
-        data['Optimistic Inner Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
-        data['Optimistic Outer Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
-        data['In Optimistic Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
+        inner_rads = []
+        outer_rads = []
+        in_hz = []
         for index, row in data.iterrows():
             semimajor = explorer._orb_dist(row)
             t_star = float(row['st_teff'])- 5780
@@ -69,10 +72,13 @@ class HabZoneEvaluator:
             opt_outer_stflux = float((sol_flux_out + a_out*t_star + b_out*(t_star**2) + c_out*(t_star**3) + d_out*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
             opt_inner_rad = np.sqrt(float((10**row['st_lum'])/opt_inner_stflux))
             opt_outer_rad = np.sqrt(float((10**row['st_lum'])/opt_outer_stflux))
-            row['Optimistic Inner Radius (AU)'] = opt_inner_rad
-            row['Optimistic Outer Radius (AU)'] = opt_outer_rad
+            inner_rads.append(opt_inner_rad)
+            outer_rads.append(opt_outer_rad)
             if pl_stflux > opt_outer_stflux and pl_stflux < opt_inner_stflux:
-                row['In Optimistic Habitable Zone'] = True
+                in_hz.append(True)
             else:
-                row['In Optimistic Habitable Zone'] = False
+                in_hz.append(False)
+        data['Optimistic Inner Radius (AU)'] = inner_rads
+        data['Optimistic Outer Radius (AU)'] = outer_rads
+        data['In Optimistic Habitable Zone'] = in_hz
         return data
