@@ -4,7 +4,13 @@ from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
 
 class ArchiveExplorer:
 
-    cols = ['hostname','dec','pl_orbper','pl_orbsmax', 'pl_masse', 'pl_msinie','pl_rade','st_teff', 'pl_eqt','pl_orbeccen']
+    cols = ['hostname','dec', 'st_mass', 'pl_orbper','pl_orbsmax', 'pl_masse', 
+            'pl_msinie','pl_rade','st_teff', 'pl_eqt','pl_orbeccen']
+    G = 6.743e-11 # m^3 kg^-1 s^-2
+    m_earth = 5.9722e24 # mass of earth in kg
+    m_sun = 1.989e30 # mass of sun in kg
+    au = 1.496e11 # 1 AU in m
+    day = 60 * 60 * 24 # day in seconds
 
     def __init__(self):
         pass
@@ -26,4 +32,13 @@ class ArchiveExplorer:
                                                   select=', '.join(self.cols),
                                                   where=' and '.join(cuts)
                                                   ).to_pandas()
+        tab['pl_orbdist'] = self._orb_dist(tab)
+        
+        self.results = tab
         return tab
+    
+    def _orb_dist(self, data):
+        """ Calculates orbital distance from orbital period """
+        r = np.cbrt((self.G * data.st_mass * self.m_sun / (4 * np.pi**2)) 
+                    * (data.pl_orbper * self.day)**2)
+        return r / self.au # orbital distance in AU
