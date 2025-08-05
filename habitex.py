@@ -9,7 +9,7 @@ class ArchiveExplorer:
     G = 6.743e-11 # m^3 kg^-1 s^-2
     m_earth = 5.9722e24 # mass of earth in kg
     m_sun = 1.989e30 # mass of sun in kg
-    r_earth = 6.371e6 # 1 AU in m
+    au = 1.496e11 # 1 AU in m
     day = 60 * 60 * 24 # day in seconds
 
     def __init__(self):
@@ -39,6 +39,6 @@ class ArchiveExplorer:
     
     def _orb_dist(self, data):
         """ Calculates orbital distance from orbital period """
-        r = np.cbrt((self.G * data.st_mass * self.m_sun / 4 / np.pi**2) 
+        r = np.cbrt((self.G * data.st_mass * self.m_sun / (4 * np.pi**2)) 
                     * (data.pl_orbper * self.day)**2)
-        return r / 1e3 # orbital distance in km
+        return r / self.au # orbital distance in AU
