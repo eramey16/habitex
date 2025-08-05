@@ -28,12 +28,14 @@ class ArchiveExplorer:
             cuts.append(f"dec>{dec[0]} and dec<{dec[1]}")
         if period is not None:
             cuts.append(f"pl_orbper>{period[0]} and pl_orbper<{period[1]}")
-        tab = NasaExoplanetArchive.query_criteria(table="pscomppars", 
+        tab = NasaExoplanetArchive.query_criteria(table=table, 
                                                   select=', '.join(self.cols),
                                                   where=' and '.join(cuts)
                                                   ).to_pandas()
         tab['pl_orbdist'] = self._orb_dist(tab)
-        
+        tab.sort_values(by='releasedate', ascending=False, ignore_index=True, inplace=True)
+        tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
+
         self.results = tab
         return tab
     
