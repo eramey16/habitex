@@ -1,4 +1,8 @@
-# habitex
+<img width="1024" height="1024" alt="habitexlogo" src="https://github.com/user-attachments/assets/0a2d6c00-8ac1-4c0d-aa27-b71e496c3e9f" /><h1 align="center">Habitex</h1>
+
+<p align="center">
+  <img src="habitexlogo.png">
+</p>
 
 **habitex** is a Python-based tool designed to vet and characterize potentially habitable exoplanets using public data from the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/). The pipeline evaluates exoplanets based on their stellar and orbital properties to determine whether they reside in a **conservative** or **optimistic habitable zone**, and supports custom filtering for survey planning, target selection, and comparative exoplanetology.
 
