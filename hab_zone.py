@@ -21,10 +21,11 @@ class HabZoneEvaluator:
         b_out = 1.6558e-9
         c_out = -3.0045e-12
         d_out = -5.2983e-16
-        data = habitex.ArchiveExplorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
-        data['Conservative Inner Radius (AU)'] = np.full(data['hostname'], np.nan, dtype=float)
-        data['Conservative Outer Radius (AU)'] = np.full(data['hostname'], np.nan, dtype=float)
-        data['In Conservative Habitable Zone'] = np.full(data['hostname'], False, dtype=bool)
+        explorer = habitex.ArchiveExplorer()
+        data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        data['Conservative Inner Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
+        data['Conservative Outer Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
+        data['In Conservative Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
         for index, row in data.iterrows():
             semimajor = habitex._orb_dist(row)
             t_star = row['st_teff'] - 5780
@@ -55,10 +56,11 @@ class HabZoneEvaluator:
         b_out = 1.5313e-9
         c_out = -2.7786e-12
         d_out = -4.8997e-16
-        data = habitex.ArchiveExplorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
-        data['Optimistic Inner Radius (AU)'] = np.full(data['hostname'], np.nan, dtype=float)
-        data['Optimistic Outer Radius (AU)'] = np.full(data['hostname'], np.nan, dtype=float)
-        data['In Optimistic Habitable Zone'] = np.full(data['hostname'], False, dtype=bool)
+        explorer = habitex.ArchiveExplorer()
+        data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        data['Optimistic Inner Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
+        data['Optimistic Outer Radius (AU)'] = np.full(len(data['hostname'].to_numpy()), np.nan, dtype=float)
+        data['In Optimistic Habitable Zone'] = np.full(len(data['hostname'].to_numpy()), False, dtype=bool)
         for index, row in data.iterrows():
             semimajor = habitex._orb_dist(row)
             t_star = row['st_teff'] - 5780
