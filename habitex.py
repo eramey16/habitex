@@ -32,13 +32,13 @@ class ArchiveExplorer:
                                                   select=', '.join(self.cols),
                                                   where=' and '.join(cuts)
                                                   ).to_pandas()
+        tab['pl_orbdist'] = self._orb_dist(tab)
+        
         self.results = tab
         return tab
     
-    def _orbital_distance(self):
+    def _orb_dist(self, data):
         """ Calculates orbital distance from orbital period """
-
-        r = np.cbrt((self.G * self.results.st_mass * self.m_sun / 4 / np.pi**2) 
-                    * (self.results.pl_orbper * self.day)**2)
-        self.results['pl_orbdist'] = r / 1e3 # orbital distance in km
-        return r
+        r = np.cbrt((self.G * data.st_mass * self.m_sun / 4 / np.pi**2) 
+                    * (data.pl_orbper * self.day)**2)
+        return r / 1e3 # orbital distance in km
