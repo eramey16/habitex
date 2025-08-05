@@ -4,8 +4,8 @@ from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
 
 class ArchiveExplorer:
 
-    cols = ['hostname','dec', 'st_mass', 'pl_orbper','pl_orbsmax', 'pl_masse', 
-            'pl_msinie','pl_rade','st_teff', 'pl_eqt','pl_orbeccen']
+    cols = ['hostname','pl_name','dec', 'st_mass', 'pl_orbper','pl_orbsmax', 'pl_masse', 
+            'pl_msinie','pl_rade','st_teff', 'pl_eqt','pl_orbeccen', 'st_lum']
     G = 6.743e-11 # m^3 kg^-1 s^-2
     m_earth = 5.9722e24 # mass of earth in kg
     m_sun = 1.989e30 # mass of sun in kg
