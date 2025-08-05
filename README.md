@@ -6,7 +6,7 @@
 
 ## Objective
 
-For each confirmed exoplanet, HZVetter:
+For each confirmed exoplanet, habitex:
 
 - Retrieves key planetary and stellar parameters using `astroquery`
 - Computes whether the planet lies within the conservative or optimistic habitable zone using models from Kopparapu et al. (2013, 2014)
@@ -18,7 +18,7 @@ For each confirmed exoplanet, HZVetter:
 
 ## Parameters Retrieved
 
-HZVetter queries the following fields from the NASA Exoplanet Archive:
+habitex queries the following fields from the NASA Exoplanet Archive:
 
 | Parameter       | Description                          |
 |----------------|--------------------------------------|
