@@ -90,7 +90,7 @@ class ArchiveExplorer:
         if t_eff is not None: cuts.append(_range('st_teff', t_eff))
         if dec is not None: cuts.append(_range('dec', dec))
         if period is not None: cuts.append(_range('pl_orbper', period))
-        if paper is not None and table=='ps': cuts.append(f"disc_refname like '{paper}'")
+        if paper is not None and table=='ps': cuts.append(f"disc_refname like '%{paper}%'")
 
         # Query exoplanet archive
         tab = NasaExoplanetArchive.query_criteria(table=table, 
