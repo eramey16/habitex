@@ -2,20 +2,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy
 import archive_explorer
+import pandas as pd
 
-class HabZoneEvaluator:
+class HabZoneEvaluator(object):
     """Class for Habitable Zone Calculations
     
-    Contains functions to calculate whether the planet is in the habitable zone, per several different models of the habitable zone.
+    Contains functions to calculate whether the planet is in the habitable zone, per several different models of the habitable zone. Provide arguments if you want to input your own (hypothetical) planet parameters, or leave arguments empty to pull data from NASA Exoplanet Archive.
 
+    Args:
+        teff (float or list of floats): Stellar effective temperature, in Kelvin
+        stell_lum (float or list of floats): Stellar luminosity, in log_10(L/L_sun)
+        pl_semimajor (float or list of floats): Orbital semimajor axis, in AU
+        pl_e (float or list of floats): Orbital eccentricity
     """
-    def __init__(self):
+    def __init__(self, teff=None, stell_lum=None, pl_semimajor=None, pl_e=None):
+
+        self.teff = teff
+        self.stell_lum = stell_lum
+        self.pl_semimajor = pl_semimajor
+        self.pl_e = pl_e
         pass
 
     def conservative_habzone(self, hostname=None, t_eff=None, dec=None, period=None, mandr=None):
         """Conservative Habitable Zone
 
-        Evaluation of whether a given planet is in the conservative habitable zone, as given by the runaway greenhouse and maximum greenhouse limits in Kopparapu et al. 2013
+        Evaluation of whether a given planet is in the conservative habitable zone, as given by the runaway greenhouse and maximum greenhouse limits in Kopparapu et al. 2013. All arguments are optional.
 
         Args:
             hostname (tuple): Names of the host stars you are interested in (as strings with single quotations)
@@ -40,13 +51,19 @@ class HabZoneEvaluator:
         b_out = 1.6558e-9
         c_out = -3.0045e-12
         d_out = -5.2983e-16
-        explorer = archive_explorer.ArchiveExplorer()
-        data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        if self.teff==None:
+            explorer = archive_explorer.ArchiveExplorer()
+            data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        else:
+            data = pd.DataFrame([{'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e}])
         inner_rads = []
         outer_rads = []
         in_hz = []
         for index, row in data.iterrows():
-            semimajor = explorer._orb_dist(row)
+            if self.teff==None:
+                semimajor = explorer._orb_dist(row)
+            else:
+                semimajor = self.pl_semimajor
             t_star = float(row['st_teff']) - 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
             cons_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
@@ -67,7 +84,7 @@ class HabZoneEvaluator:
     def optimistic_habzone(self, hostname=None, t_eff=None, dec=None, period=None, mandr=None):
         """Optimistic Habitable Zone
 
-        Evaluation of whether a given planet is in the optimistic habitable zone, as given by the recent Venus and early Mars limits in Kopparapu et al. 2013
+        Evaluation of whether a given planet is in the optimistic habitable zone, as given by the recent Venus and early Mars limits in Kopparapu et al. 2013. All arguments are optional.
 
         Args:
             hostname (tuple): Names of the host stars you are interested in (as strings)
@@ -92,13 +109,19 @@ class HabZoneEvaluator:
         b_out = 1.5313e-9
         c_out = -2.7786e-12
         d_out = -4.8997e-16
-        explorer = archive_explorer.ArchiveExplorer()
-        data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        if self.teff==None:
+            explorer = archive_explorer.ArchiveExplorer()
+            data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        else:
+            data = pd.DataFrame([{'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e}])
         inner_rads = []
         outer_rads = []
         in_hz = []
         for index, row in data.iterrows():
-            semimajor = explorer._orb_dist(row)
+            if self.teff==None:
+                semimajor = explorer._orb_dist(row)
+            else:
+                semimajor = self.pl_semimajor
             t_star = float(row['st_teff'])- 5780
             pl_stflux = float((10**row['st_lum'])/semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
             opt_inner_stflux = float((sol_flux_in + a_in*t_star + b_in*(t_star**2) + c_in*(t_star**3) + d_in*(t_star**4))/np.sqrt(1 - float(row['pl_orbeccen'])**2))
