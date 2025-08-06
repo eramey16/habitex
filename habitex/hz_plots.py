@@ -5,7 +5,7 @@ from matplotlib.offsetbox import (AnchoredOffsetbox, AuxTransformBox,
                                   DrawingArea, TextArea, VPacker)
 import astropy
 from matplotlib.patches import Circle, Ellipse, Annulus
-import habitex
+import archive_explorer
 import hab_zone
 
 
@@ -18,7 +18,7 @@ class PlotHZ:
         pass
          
     
-    def plot_hab(self, hostname=None,sma=None, eccen=None, cons_in=None, cons_out=None, opt_in=None, opt_out=None):
+    def plot_hab(self, hostname=None, pl_name=None,sma=None, eccen=None, cons_in=None, cons_out=None, opt_in=None, opt_out=None):
 
         """Plot HZ
         Visual representation of the planet orbit and Habitable Zone around the star
@@ -37,7 +37,7 @@ class PlotHZ:
         Returns:
             pyplot
         """
-        exp = habitex.ArchiveExplorer()
+        exp = archive_explorer.ArchiveExplorer()
         if hostname:
             tab = exp.query_exo(hostname=hostname)
         else:
@@ -47,24 +47,42 @@ class PlotHZ:
             print("No matching exoplanet data found.")
             return
 
+        if pl_name:
+            planet_row = tab[tab["pl_name"] == pl_name]
+            if planet_row.empty:
+                print(f"No planet named {pl_name} found for {hostname}.")
+                return
+            tab = planet_row
+        else:
+            tab = tab.iloc[[0]]  # default to first planet
+
         eccen = tab["pl_orbeccen"].iloc[0]
         sma = tab["pl_orbsmax"].iloc[0]
 
         eval = hab_zone.HabZoneEvaluator()
 
-        cons_data = eval.conservative_habzone()
-        cons_in = cons_data['Conservative Inner Radius (AU)'].min()
-        cons_out = cons_data['Conservative Outer Radius (AU)'].max()
+        cons_data = eval.conservative_habzone(hostname=hostname)
+        opt_data = eval.optimistic_habzone(hostname=hostname)
 
-        opt_data = eval.optimistic_habzone()
-        opt_in = opt_data['Optimistic Inner Radius (AU)'].min()
-        opt_out = opt_data['Optimistic Outer Radius (AU)'].max()
+        if cons_data.empty or opt_data.empty:
+            print(f"Habitable zone data not found for {hostname}.")
+            return
+
+        cons_in = cons_data['Conservative Inner Radius (AU)'].iloc[0]
+        cons_out = cons_data['Conservative Outer Radius (AU)'].iloc[0]
+
+        opt_in = opt_data['Optimistic Inner Radius (AU)'].iloc[0]
+        opt_out = opt_data['Optimistic Outer Radius (AU)'].iloc[0]
 
         cons_zone = Annulus((0, 0), cons_out, cons_out - cons_in, color='green', alpha=0.8, label="Conservative HZ")
         opt_zone = Annulus((0, 0), opt_out, opt_out - opt_in, color='green', alpha=0.4, label="Optimistic HZ")
 
-        smin = np.sqrt(1 - (eccen)**2)*sma
-        orbit = Ellipse((0, 0), sma, smin, angle=30, color='black', fill=False, label="Planet Orbit")
+        # Orbital parameters
+        a = sma  # semi-major axis
+        b = np.sqrt(1 - eccen**2) * a  # semi-minor axis
+        focus_offset = eccen * a  # distance from center to star (focus)
+        orbit = Ellipse((-focus_offset, 0), 2 * a, 2 * b, color='black', fill=False, label="Planet Orbit")
+
 
         fig, ax = plt.subplots()
 
@@ -78,16 +96,14 @@ class PlotHZ:
 
         ax.set_aspect('equal')
 
-        ax.text(0, 0, '★', fontsize=20, ha='center', va='center', color='gold', zorder=5)
+        ax.plot(0, 0, marker='*', markersize=10, color='gold', zorder=5)
 
         max_radius = max(cons_out, opt_out, sma * (1 + eccen))  # add margin for orbit
         ax.set_xlim(-1.2*max_radius, 1.2*max_radius)
         ax.set_ylim(-1.2*max_radius, 1.2*max_radius)
         ax.legend()
 
-        planet_name = tab["pl_name"].iloc[0]
-
-        plt.title(f"Habitable Zone and Orbit for {planet_name}")
+        plt.title(f"Habitable Zone and Orbit for {pl_name}")
         plt.show()
 
         return
@@ -102,7 +118,7 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = habitex.ArchiveExplorer()
+        exp = archive_explorer.ArchiveExplorer()
         if hostname:
             tab = exp.query_exo(hostname=hostname)
         else:
@@ -111,9 +127,6 @@ class PlotHZ:
         if tab.empty:
             print("No matching exoplanet data found.")
             return
-
-        eccen = tab["pl_orbeccen"].iloc[0]
-        sma = tab["pl_orbsmax"].iloc[0]
 
         eval = hab_zone.HabZoneEvaluator()
         table = eval.conservative_habzone()
@@ -125,8 +138,8 @@ class PlotHZ:
         plt.scatter(cons_mass,cons_radii,c=cons_temp,cmap='inferno')
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('Minimum Mass ($M_{\earth}$)')
-        plt.ylabel('Planet Radius ($R_{\earth}$)')
+        plt.xlabel('Minimum Mass (M$_{\oplus}$)')
+        plt.ylabel('Planet Radius (R$_{\oplus}$)')
         plt.colorbar(label='Host Star $T_{eff}$')
         plt.title('Mass-Radius Relation for Planets in the Conservative HZ')
         plt.show()
@@ -141,9 +154,9 @@ class PlotHZ:
             hostname (string)
         
         Returns:
-            matplotlib.pylot
+            matplotlib.pyplot
         """
-        exp = habitex.ArchiveExplorer()
+        exp = archive_explorer.ArchiveExplorer()
         if hostname:
             tab = exp.query_exo(hostname=hostname)
         else:
@@ -163,10 +176,11 @@ class PlotHZ:
         plt.scatter(opt_mass,opt_radii,c=opt_temp,cmap='inferno')
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('Minimum Mass ($M_{\earth}$)')
-        plt.ylabel('Planet Radius ($R_{\earth}$)')
+        plt.xlabel('Minimum Mass (M$_{\oplus}$)')
+        plt.ylabel('Planet Radius (R$_{\oplus}$)')
         plt.colorbar(label='Host Star $T_{eff}$')
         plt.title('Mass-Radius Relation for Planets in the Optimistic HZ')
         plt.show()
 
         return
+    
