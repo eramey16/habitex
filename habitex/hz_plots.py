@@ -100,7 +100,7 @@ class PlotHZ:
             hostname (string)
         
         Returns:
-            pyplot
+            matplotlib.pyplot
         """
         exp = habitex.ArchiveExplorer()
         if hostname:
@@ -141,7 +141,7 @@ class PlotHZ:
             hostname (string)
         
         Returns:
-            pyplot
+            matplotlib.pylot
         """
         exp = habitex.ArchiveExplorer()
         if hostname:
