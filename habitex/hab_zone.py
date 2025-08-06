@@ -4,7 +4,11 @@ import astropy
 import habitex
 
 class HabZoneEvaluator:
+    """Class for Habitable Zone Calculations
     
+    Contains functions to calculate whether the planet is in the habitable zone, per several different models of the habitable zone.
+
+    """
     def __init__(self):
         pass
 
