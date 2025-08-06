@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy
-import habitex
+import archive_explorer
 
 class HabZoneEvaluator:
     """Class for Habitable Zone Calculations
@@ -40,7 +40,7 @@ class HabZoneEvaluator:
         b_out = 1.6558e-9
         c_out = -3.0045e-12
         d_out = -5.2983e-16
-        explorer = habitex.ArchiveExplorer()
+        explorer = archive_explorer.ArchiveExplorer()
         data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
         inner_rads = []
         outer_rads = []
@@ -92,7 +92,7 @@ class HabZoneEvaluator:
         b_out = 1.5313e-9
         c_out = -2.7786e-12
         d_out = -4.8997e-16
-        explorer = habitex.ArchiveExplorer()
+        explorer = archive_explorer.ArchiveExplorer()
         data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
         inner_rads = []
         outer_rads = []
