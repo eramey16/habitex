@@ -50,30 +50,29 @@ class ArchiveExplorer:
             dec (optional): Declination range to search [lo, hi]
             period (optional): Period range to search [lo, hi]
             mandr (optional): Specifies that both mass and radius must be non-null
-            cols: (optional): List of additional column names as string
-            Default columns:
-                gaia_id: Gaia ID of the star
-                ra: Right Ascension (star)
-                dec: Declination (star)
-                pl_pubdate: Initial date of publication of the planet's data
-                pl_name: Most commonly used planet name
-                hostname: Name of host star
-                st_mass: Mass of host star (in solar masses)
-                st_teff: Effective temperature of host star (in Kelvin)
-                st_lum: Log luminosity of host star (in log10(Solar))
-                pl_orbper: Orbital period of planet
-                pl_orbsmax: Orbital distance of planet
-                pl_masse: Mass of planet (in Earth masses)
-                pl_msinie: Minimum mass (in Earth masses)
-                pl_rade: Radius of planet (in Earth radii)
-                pl_eqt: Equilibrium temperature of the planet (in Kelvin)
-                pl_orbeccen: Orbital eccentricity of the planet
-                pl_dens: Density of planet (in g/cm^3)
+            cols (optional): List of additional column names as string. Default values:
+                | *gaia_id*: Gaia ID of the star
+                | *ra*: Right Ascension (star)
+                | *dec*: Declination (star)
+                | *pl_pubdate*: Initial date of publication of the planet's data
+                | *pl_name*: Most commonly used planet name
+                | *hostname*: Name of host star
+                | *st_mass*: Mass of host star (in solar masses)
+                | *st_teff*: Effective temperature of host star (in Kelvin)
+                | *st_lum*: Log luminosity of host star (in log10(Solar))
+                | *pl_orbper*: Orbital period of planet
+                | *pl_orbsmax*: Orbital distance of planet
+                | *pl_masse*: Mass of planet (in Earth masses)
+                | *pl_msinie*: Minimum mass (in Earth masses)
+                | *pl_rade*: Radius of planet (in Earth radii)
+                | *pl_eqt*: Equilibrium temperature of the planet (in Kelvin)
+                | *pl_orbeccen*: Orbital eccentricity of the planet
+                | *pl_dens*: Density of planet (in g/cm^3)
         
         Returns:
             results: Results of query as a pandas dataframe.
-            Orbital distance will be a new column 'pl_orbdist' (in AU), 
-            and planet density classification will be in 'pl_type' (string)
+            Orbital distance will be a new column *pl_orbdist* (in AU), 
+            and planet density classification will be in column *pl_type* (as string)
         """
         
         # Add default cuts, unless user specified
