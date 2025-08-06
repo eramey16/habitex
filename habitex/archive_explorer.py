@@ -38,19 +38,21 @@ class ArchiveExplorer:
     
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
-                 period=None, mandr=False, cols=None):
+                 period=None, mandr=False, cols=None, paper=None):
         """ Queries the NASA Exoplanet archive
 
         Calculates orbital distance and planet density and adds them to query results
 
         Args:
-            table (optional): Table to pull from (typically 'ps' or 'pscomppars')
-            hostname (optional): Specify hostname of a star or set of stars (e.g. 'Kepler-%')
-            t_eff (optional): Range of effective temperatures [lo, hi]
-            dec (optional): Declination range to search [lo, hi]
-            period (optional): Period range to search [lo, hi]
-            mandr (optional): Specifies that both mass and radius must be non-null
-            cols (optional): List of additional column names as string. Default values:
+            table (str, optional): Table to pull from (typically 'ps' or 'pscomppars')
+            hostname (str/list, optional): Specify hostname of a star or set of stars (e.g. 'Kepler-%')
+            t_eff (tuple, optional): Range of effective temperatures [lo, hi]
+            dec (tuple, optional): Declination range to search [lo, hi]
+            period (tuple, optional): Period range to search [lo, hi]
+            mandr (bool, optional): Specifies that both mass and radius must be non-null
+            paper (str/list, optional): Reference name for discovery publication, only used with table 'ps' 
+                (formatted as 'Author et al. Year')
+            cols (list, optional): List of additional column names as string. Default values:
                 | *gaia_id*: Gaia ID of the star
                 | *ra*: Right Ascension (star)
                 | *dec*: Declination (star)
@@ -70,7 +72,7 @@ class ArchiveExplorer:
                 | *pl_dens*: Density of planet (in g/cm^3)
         
         Returns:
-            results: Results of query as a pandas dataframe.
+            results (pd.DataFrame): Results of query as a pandas dataframe.
             Orbital distance will be a new column *pl_orbdist* (in AU), 
             and planet density classification will be in column *pl_type* (as string)
         """
@@ -88,6 +90,7 @@ class ArchiveExplorer:
         if t_eff is not None: cuts.append(_range('st_teff', t_eff))
         if dec is not None: cuts.append(_range('dec', dec))
         if period is not None: cuts.append(_range('pl_orbper', period))
+        if paper is not None and table=='ps': cuts.append(f"disc_refname like '%{paper}%'")
 
         # Query exoplanet archive
         tab = NasaExoplanetArchive.query_criteria(table=table, 
