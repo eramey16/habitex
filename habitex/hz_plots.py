@@ -20,7 +20,7 @@ class PlotHZ:
     
     def plot_hab(self, hostname=None, pl_name=None,sma=None, eccen=None, cons_in=None, cons_out=None, opt_in=None, opt_out=None):
 
-        """Plot HZ
+        """Plot Habitable Zone
         Visual representation of the planet orbit and Habitable Zone around the star
         The conservative and optimistic habitable zone are plotted in concentric circles,
         while the planet orbit will be an ellipse depending on eccentricity
