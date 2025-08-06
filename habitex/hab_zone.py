@@ -55,7 +55,7 @@ class HabZoneEvaluator(object):
             explorer = archive_explorer.ArchiveExplorer()
             data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
         else:
-            data = pd.DataFrame({'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e})
+            data = pd.DataFrame({'st_teff':np.array(self.teff),'st_lum':np.array(self.stell_lum),'pl_orbeccen':np.array(self.pl_e)})
         inner_rads = []
         outer_rads = []
         in_hz = []
@@ -113,7 +113,7 @@ class HabZoneEvaluator(object):
             explorer = archive_explorer.ArchiveExplorer()
             data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
         else:
-            data = pd.DataFrame({'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e})
+            data = pd.DataFrame({'st_teff':np.array(self.teff),'st_lum':np.array(self.stell_lum),'pl_orbeccen':np.array(self.pl_e)})
         inner_rads = []
         outer_rads = []
         in_hz = []
