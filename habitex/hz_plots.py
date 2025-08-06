@@ -10,29 +10,32 @@ import hab_zone
 
 
 class PlotHZ:
+    """Class: PlotHZ
+    Useful Plots to visualize planets in the habitable zone
 
-
+    """
     def __init__(self):
         pass
          
     
     def plot_hab(self, hostname=None,sma=None, eccen=None, cons_in=None, cons_out=None, opt_in=None, opt_out=None):
 
-        """ 
+        """Plot HZ
         Visual representation of the planet orbit and Habitable Zone around the star
         The conservative and optimistic habitable zone are plotted in concentric circles,
         while the planet orbit will be an ellipse depending on eccentricity
 
         Args:
-        sma: Semi-major axis in AU
-        self.eccen: eccentricity
-
-        For both conservative and optimistic 
-        Inner HZ: AU
-        Outer HZ: AU
-        Inner HZ: AU
-        Outer HZ: AU
+            hostname (string)
+            sma (float): Semi-major axis in AU
+            eccen (float): eccentricity
+            cons_in: Inner bound of conservative habitable zone in AU
+            cons_out: Outer bound of conservative habitable zone in AU
+            opt_in: Inner bound of optimistic habitable zone in AU
+            opt_out: Outer bound of optimistic habitable zone in AU
         
+        Returns:
+            pyplot
         """
         exp = habitex.ArchiveExplorer()
         if hostname:
@@ -89,7 +92,67 @@ class PlotHZ:
 
         return
 
-    def plot_mrad(self):
+    def plot_massradius_conservative(self, hostname=None):
+        """Plot Mass-Radius Diagram 
+        Plot the mass radius diagram for the conservative habitable zone 
+
+        Args:
+            hostname (string)
+        
+        Returns:
+            pyplot
+        """
+        exp = habitex.ArchiveExplorer()
+        if hostname:
+            tab = exp.query_exo(hostname=hostname)
+        else:
+            tab = exp.query_exo()
+
+        if tab.empty:
+            print("No matching exoplanet data found.")
+            return
+
+        eccen = tab["pl_orbeccen"].iloc[0]
+        sma = tab["pl_orbsmax"].iloc[0]
+
+        eval = hab_zone.HabZoneEvaluator()
+        table = eval.conservative_habzone()
+        cons_table = table[table['In Conservative Habitable Zone'] == True]
+        cons_mass = cons_table['pl_msinie']
+        cons_radii = cons_table['pl_rade']
+        cons_temp = cons_table['st_teff'].values
+
+        plt.scatter(cons_mass,cons_radii,c=cons_temp,cmap='inferno')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Minimum Mass ($M_{\earth}$)')
+        plt.ylabel('Planet Radius ($R_{\earth}$)')
+        plt.colorbar(label='Host Star $T_{eff}$')
+        plt.title('Mass-Radius Relation for Planets in the Conservative HZ')
+        plt.show()
+
+        return
+    
+    def plot_massradius_optimistic(self, hostname=None):
+        """Plot Mass-Radius Diagram 
+        Plot the mass radius diagram for the optimistic habitable zone 
+
+        Args:
+            hostname (string)
+        
+        Returns:
+            pyplot
+        """
+        exp = habitex.ArchiveExplorer()
+        if hostname:
+            tab = exp.query_exo(hostname=hostname)
+        else:
+            tab = exp.query_exo()
+
+        if tab.empty:
+            print("No matching exoplanet data found.")
+            return
+
         eval = hab_zone.HabZoneEvaluator()
         table2 = eval.optimistic_habzone()
         opt_table = table2[table2['In Optimistic Habitable Zone'] == True]
