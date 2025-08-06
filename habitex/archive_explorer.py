@@ -38,7 +38,7 @@ class ArchiveExplorer:
     
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
-                 period=None, mandr=False, cols=None):
+                 period=None, mandr=False, cols=None, paper=None):
         """ Queries the NASA Exoplanet archive
 
         Calculates orbital distance and planet density and adds them to query results
@@ -69,6 +69,7 @@ class ArchiveExplorer:
                 pl_eqt: Equilibrium temperature of the planet (in Kelvin)
                 pl_orbeccen: Orbital eccentricity of the planet
                 pl_dens: Density of planet (in g/cm^3)
+                paper: Reference name for discovery publication for use with table 'ps' (string or list of strings, formatted as 'Author et al. Year')
         
         Returns:
             results: Results of query as a pandas dataframe.
@@ -89,6 +90,7 @@ class ArchiveExplorer:
         if t_eff is not None: cuts.append(_range('st_teff', t_eff))
         if dec is not None: cuts.append(_range('dec', dec))
         if period is not None: cuts.append(_range('pl_orbper', period))
+        if paper is not None and table=='ps': cuts.append(f"disc_refname like '{paper}'")
 
         # Query exoplanet archive
         tab = NasaExoplanetArchive.query_criteria(table=table, 
