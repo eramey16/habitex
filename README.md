@@ -99,5 +99,6 @@ Users may apply custom filters on:
 ## References
 
 - Kopparapu et al. (2013), ApJ, 765, 131  
-- Kopparapu et al. (2014), ApJ, 787, L29  
+- Kopparapu et al. (2014), ApJ, 787, L29
+- Luque et al. (2022) arXiv:2209.03871v1
 - NASA Exoplanet Archive API: https://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html  
