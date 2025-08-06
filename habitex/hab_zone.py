@@ -4,23 +4,29 @@ import astropy
 import habitex
 
 class HabZoneEvaluator:
+    """Class for Habitable Zone Calculations
     
+    Contains functions to calculate whether the planet is in the habitable zone, per several different models of the habitable zone.
+
+    """
     def __init__(self):
         pass
 
     def conservative_habzone(self, hostname=None, t_eff=None, dec=None, period=None, mandr=None):
-        """
-        Evaluation of whether a given planet is in the conservative habitable zone,
-        as given by the runaway greenhouse and maximum greenhouse limits in Kopparapu et al. 2013
+        """Conservative Habitable Zone
 
-        Args (all optional):
-            hostname (tuple): Names of the host stars you are interested in (as strings)
+        Evaluation of whether a given planet is in the conservative habitable zone, as given by the runaway greenhouse and maximum greenhouse limits in Kopparapu et al. 2013
+
+        Args:
+            hostname (tuple): Names of the host stars you are interested in (as strings with single quotations)
             t_eff (tuple): Tuple of minimum and maximum stellar effective temperatures you are interested in
             dec (tuple): Tuple of minimum and maximum declinations you are interested in
             period (tuple): Tuple of minimum and maximum planet orbital periods you are interested in (in days)
             mandr (Boolean, default=False): Require that there be measured mass and radius values
 
-         """
+        Returns:
+            DataFrame: Table of the planet systems and properties produced by ArchiveExplorer.query_exo(), with additional columns for the inner and outer radius of the conservative habitable zone and whether the planet is in the conservative habitable zone.
+        """
         #Inner radius = runaway greenhouse (per Kopparapu et al. 2013)
         #Outer radius = maximum greenhouse
         sol_flux_in = 1.0512
@@ -59,17 +65,19 @@ class HabZoneEvaluator:
         return data
 
     def optimistic_habzone(self, hostname=None, t_eff=None, dec=None, period=None, mandr=None):
-        """
-        Evaluation of whether a given planet is in the optimistic habitable zone,
-        as given by the recent Venus and early Mars limits in Kopparapu et al. 2013
+        """Optimistic Habitable Zone
 
-        Args (all optional):
+        Evaluation of whether a given planet is in the optimistic habitable zone, as given by the recent Venus and early Mars limits in Kopparapu et al. 2013
+
+        Args:
             hostname (tuple): Names of the host stars you are interested in (as strings)
             t_eff (tuple): Tuple of minimum and maximum stellar effective temperatures you are interested in
             dec (tuple): Tuple of minimum and maximum declinations you are interested in
             period (tuple): Tuple of minimum and maximum planet orbital periods you are interested in (in days)
             mandr (Boolean, default=False): Require that there be measured mass and radius values
 
+        Returns:
+            DataFrame: Table of the planet systems and properties produced by ArchiveExplorer.query_exo(), with additional columns for the inner and outer radius of the conservative habitable zone and whether the planet is in the optimistic habitable zone.
         """
         #Inner radius = recent Venus (per Kopparapu et al. 2013)
         #Outer radius = early Mars
