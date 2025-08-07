@@ -4,7 +4,7 @@ from matplotlib.lines import Line2D
 from matplotlib.offsetbox import (AnchoredOffsetbox, AuxTransformBox,
                                   DrawingArea, TextArea, VPacker)
 from matplotlib.patches import Circle, Ellipse, Annulus
-import archive_explorer
+from habitex import ArchiveExplorer
 
 
 class PlotHZ:
@@ -36,7 +36,7 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
+        exp = ArchiveExplorer()
         if hostname:
             tab = exp.query_exo(hostname=hostname)
         else:
@@ -112,7 +112,7 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
+        exp = ArchiveExplorer()
         tab = exp.query_exo()
 
         cons_table = tab[tab['in_hz_cons'] == True]
@@ -141,7 +141,7 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
+        exp = ArchiveExplorer()
         tab = exp.query_exo()
         
         opt_table = tab[tab['in_hz_opt'] == True]
