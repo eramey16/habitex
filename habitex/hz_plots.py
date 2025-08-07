@@ -3,7 +3,6 @@ from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import (AnchoredOffsetbox, AuxTransformBox,
                                   DrawingArea, TextArea, VPacker)
-import astropy
 from matplotlib.patches import Circle, Ellipse, Annulus
 import archive_explorer
 
