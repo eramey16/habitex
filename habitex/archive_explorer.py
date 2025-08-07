@@ -106,8 +106,8 @@ class ArchiveExplorer:
             tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
             tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
         
-        new_data = self.calc_expo(tab, optimistic=optimistic)
-        tab = tab.join(tab, new_data)
+        tab = self.calc_expo(tab, optimistic=optimistic)
+        # tab = tab.join(tab, new_data)
         return tab
     
     def calc_expo(self, pl_data, optimistic=False):
@@ -117,15 +117,15 @@ class ArchiveExplorer:
             optimistic (bool, optional): Whether to use an optimistic habitable zone (False for conservative)
         """
         # Calculate orbital distance and add to table
-        new_data = pd.DataFrame()
-        new_data['pl_orbdist'] = self._orb_dist(data)
-        new_data['pl_type'] = data['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
+        pl_data['pl_orbdist'] = self._orb_dist(pl_data)
+        pl_data['pl_type'] = pl_data['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
                                                   if pd.notnull(x) else None)
 
         # Calculate the habitable zone and add to the table
-        new_data = new_data.join(self._hab_zone(data, optimistic=optimistic))
+        pl_data = pl_data.join(self._hab_zone(pl_data, optimistic=optimistic))
+        self.results = pl_data
 
-        return new_data
+        return pl_data
     
     def _classify_planet_by_density(self, density_ratio):
         """ Classifies a planet's type based on its density
