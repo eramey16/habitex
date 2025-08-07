@@ -60,7 +60,7 @@ class HabZoneEvaluator(object):
         outer_rads = []
         in_hz = []
         for index, row in data.iterrows():
-            if self.teff==None:
+            if self.teff==None: # Note: '==None' will fail on arrays
                 semimajor = explorer._orb_dist(row)
             else:
                 semimajor = self.pl_semimajor

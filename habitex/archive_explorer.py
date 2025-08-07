@@ -15,27 +15,23 @@ class ArchiveExplorer:
     au = 1.496e11 # 1 AU in m
     day = 60 * 60 * 24 # day in seconds
 
-    def __init__(self):
-        pass
-
-    def _classify_planet_by_density(self, density_ratio):
-        """ Classifies a planet's type based on its density
-
-        Args:
-            density_ratio: A pandas series or numpy array of density ratios (float)
-        
-        Returns:
-            String classificatoin of density (Gas planet, water, world, or Rocky planet)
-        """
-#         if np.isnan(density_ration):
-#           return None
-        if density_ratio < 0.4:
-            return "Gas"
-        elif density_ratio < 0.7:
-            return "Water"
-        else:
-            return "Rocky"
+    cons_params = {
+        'sol_flux_in': 1.0512, 'sol_flux_out': 0.3438,
+        'a_in': 1.3242e-4, 'a_out': 5.8942e-5,
+        'b_in': 1.5418e-8, 'b_out': 1.6558e-9,
+        'c_in': -7.9895e-12, 'c_out': -3.0045e-12,
+        'd_in': -1.8328e-15, 'd_out': -5.2983e-16,}
     
+    opt_params = {
+        'sol_flux_in': 1.7753, 'sol_flux_out': 0.3179,
+        'a_in': 1.4316e-4, 'a_out': 5.4513e-5,
+        'b_in': 2.9875e-9, 'b_out': 1.5313e-9,
+        'c_in': -7.5702e-12, 'c_out': -2.7786e-12,
+        'd_in': -1.1635e-15, 'd_out': -4.8997e-16,
+    }
+
+    def __init__(self, optimistic=False):
+        self.params = self.opt_params if optimistic else self.cons_params
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
                  period=None, mandr=False, cols=None, paper=None):
@@ -104,18 +100,73 @@ class ArchiveExplorer:
                                                   ).to_pandas()
         
         
+        # Drop duplicates (last first) if the table includes them
+        if table!='pscomppars':
+            tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
+            tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
+        
         # Calculate orbital distance and add to table
         tab['pl_orbdist'] = self._orb_dist(tab)
         tab['pl_type'] = tab['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
                                                   if pd.notnull(x) else None)
 
-        # Drop duplicates (last first) if the table includes them
-        if table!='pscomppars':
-            tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
-            tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
+        # Calculate the habitable zone and add to the table
+        tab = tab.join(self._hab_zone(tab))
 
         self.results = tab
         return tab
+    
+    def _classify_planet_by_density(self, density_ratio):
+        """ Classifies a planet's type based on its density
+
+        Args:
+            density_ratio: A pandas series or numpy array of density ratios (float)
+        
+        Returns:
+            String classificatoin of density (Gas planet, water, world, or Rocky planet)
+        """
+        if density_ratio < 0.4:
+            return "Gas"
+        elif density_ratio < 0.7:
+            return "Water"
+        else:
+            return "Rocky"
+    
+    # def _hab_eq(flux, t_star, orb_eccen, a, b, c, d):
+    #     pass
+    
+    def _hab_zone(self, data):
+        # if self.teff==None:
+        #     explorer = archive_explorer.ArchiveExplorer()
+        #     data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
+        # else:
+        #     data = pd.DataFrame([{'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e}])
+        
+        semimajor = data.pl_orbdist.astype(float) # TODO: Need to talk about whether to use archived or calculated
+        t_star = data.st_teff.astype(float) - 5780 # TODO: why is it -5780? I thought already in Kelvin?
+        pl_stflux = (10**data.st_lum.astype(float))/(semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
+        inner_stflux = (self.params['sol_flux_in'] + 
+                        self.params['a_in'] * t_star + 
+                        self.params['b_in'] * (t_star**2) +
+                        self.params['c_in'] * (t_star**3) +
+                        self.params['d_in'] * (t_star**4)
+                        ) / np.sqrt(1 - data.pl_orbeccen.astype(float)**2)
+        outer_stflux = (self.params['sol_flux_out'] + 
+                        self.params['a_out'] * t_star + 
+                        self.params['b_out'] * (t_star**2) +
+                        self.params['c_out'] * (t_star**3) +
+                        self.params['d_out'] * (t_star**4)
+                        ) / np.sqrt(1 - data.pl_orbeccen.astype(float)**2)
+        inner_rad = np.sqrt((10**data.st_lum)/inner_stflux)
+        outer_rad = np.sqrt((10**data.st_lum)/outer_stflux)
+
+        new_data = pd.DataFrame()
+
+        new_data['hz_inner'] = inner_rad
+        new_data['hz_outer'] = outer_rad
+        new_data['in_hz'] = (np.array(pl_stflux > outer_stflux) & 
+                         np.array(pl_stflux < inner_stflux)) # TODO: is it the reverse?
+        return new_data
     
     def _orb_dist(self, data):
         """ Calculates orbital distance from orbital period 
