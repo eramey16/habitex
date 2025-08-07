@@ -31,10 +31,10 @@ class ArchiveExplorer:
     }
 
     def __init__(self, optimistic=False):
-        self.params = self.opt_params if optimistic else self.cons_params
+        pass
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
-                 period=None, mandr=False, cols=None, paper=None):
+                 period=None, mandr=False, paper=None, optimistic=False, cols=None):
         """ Queries the NASA Exoplanet archive
 
         Calculates orbital distance and planet density and adds them to query results
@@ -48,6 +48,7 @@ class ArchiveExplorer:
             mandr (bool, optional): Specifies that both mass and radius must be non-null
             paper (str/list, optional): Reference name for discovery publication, only used with table 'ps' 
                 (formatted as 'Author et al. Year')
+            optimistic (bool, optional): Whether to use an optimistic habitable zone (False for conservative)
             cols (list, optional): List of additional column names as string. Default values:
                 | *gaia_id*: Gaia ID of the star
                 | *ra*: Right Ascension (star)
@@ -105,16 +106,26 @@ class ArchiveExplorer:
             tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
             tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
         
+        new_data = self.calc_expo(tab, optimistic=optimistic)
+        tab = tab.join(tab, new_data)
+        return tab
+    
+    def calc_expo(self, pl_data, optimistic=False):
+        """ Calculates exoplanet habitable zone based on user-input dataframe
+        Args:
+            pl_data (pd.DataFrame): Table of planetary data (TODO - list required columns)
+            optimistic (bool, optional): Whether to use an optimistic habitable zone (False for conservative)
+        """
         # Calculate orbital distance and add to table
-        tab['pl_orbdist'] = self._orb_dist(tab)
-        tab['pl_type'] = tab['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
+        new_data = pd.DataFrame()
+        new_data['pl_orbdist'] = self._orb_dist(data)
+        new_data['pl_type'] = data['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
                                                   if pd.notnull(x) else None)
 
         # Calculate the habitable zone and add to the table
-        tab = tab.join(self._hab_zone(tab))
+        new_data = new_data.join(self._hab_zone(data, optimistic=optimistic))
 
-        self.results = tab
-        return tab
+        return new_data
     
     def _classify_planet_by_density(self, density_ratio):
         """ Classifies a planet's type based on its density
@@ -132,22 +143,24 @@ class ArchiveExplorer:
         else:
             return "Rocky"
     
-    def _hab_zone(self, data):
+    def _hab_zone(self, data, optimistic=False):
+
+        params = self.opt_params if optimistic else self.cons_params
         
-        semimajor = data.pl_orbdist.astype(float) # TODO: Need to talk about whether to use archived or calculated
-        t_star = data.st_teff.astype(float) - 5780 # TODO: why is it -5780? I thought already in Kelvin?
+        semimajor = data.pl_orbdist.astype(float)
+        t_star = data.st_teff.astype(float) - 5780
         pl_stflux = (10**data.st_lum.astype(float))/(semimajor**2) #Stellar luminosity is in units of log(L/L_sun)
-        inner_stflux = (self.params['sol_flux_in'] + 
-                        self.params['a_in'] * t_star + 
-                        self.params['b_in'] * (t_star**2) +
-                        self.params['c_in'] * (t_star**3) +
-                        self.params['d_in'] * (t_star**4)
+        inner_stflux = (params['sol_flux_in'] + 
+                        params['a_in'] * t_star + 
+                        params['b_in'] * (t_star**2) +
+                        params['c_in'] * (t_star**3) +
+                        params['d_in'] * (t_star**4)
                         ) / np.sqrt(1 - data.pl_orbeccen.astype(float)**2)
-        outer_stflux = (self.params['sol_flux_out'] + 
-                        self.params['a_out'] * t_star + 
-                        self.params['b_out'] * (t_star**2) +
-                        self.params['c_out'] * (t_star**3) +
-                        self.params['d_out'] * (t_star**4)
+        outer_stflux = (params['sol_flux_out'] + 
+                        params['a_out'] * t_star + 
+                        params['b_out'] * (t_star**2) +
+                        params['c_out'] * (t_star**3) +
+                        params['d_out'] * (t_star**4)
                         ) / np.sqrt(1 - data.pl_orbeccen.astype(float)**2)
         inner_rad = np.sqrt((10**data.st_lum)/inner_stflux)
         outer_rad = np.sqrt((10**data.st_lum)/outer_stflux)
@@ -157,7 +170,7 @@ class ArchiveExplorer:
         new_data['hz_inner'] = inner_rad
         new_data['hz_outer'] = outer_rad
         new_data['in_hz'] = (np.array(pl_stflux > outer_stflux) & 
-                         np.array(pl_stflux < inner_stflux)) # TODO: is it the reverse?
+                         np.array(pl_stflux < inner_stflux))
         return new_data
     
     def _orb_dist(self, data):
