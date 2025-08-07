@@ -60,7 +60,7 @@ Users may apply custom filters on:
 - Flags for:
   - Conservative HZ inclusion
   - Optimistic HZ inclusion
-  - Rocky planet likelihood
+  - Three potential populations (rocky planets, water worlds, and gas planets)
 - Plots to visualize planet orbit compared to optimistic and conservative habitable zone
 - Mass-Radius diagram for planets falling in the habitable zone
 
