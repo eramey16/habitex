@@ -34,7 +34,7 @@ class ArchiveExplorer:
         pass
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
-                 period=None, mandr=False, paper=None, optimistic=False, cols=None):
+                 period=None, mandr=False, paper=None, cols=None):
         """ Queries the NASA Exoplanet archive
 
         Calculates orbital distance and planet density and adds them to query results
@@ -116,7 +116,7 @@ class ArchiveExplorer:
         self.results = tab
         return tab
     
-    def calc_exo(self, pl_data, optimistic=False):
+    def calc_exo(self, pl_data):
         """ Calculates exoplanet parameters based on user-input data
 
         Args:
