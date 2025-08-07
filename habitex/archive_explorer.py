@@ -111,7 +111,8 @@ class ArchiveExplorer:
         return tab
     
     def calc_expo(self, pl_data, optimistic=False):
-        """ Calculates exoplanet habitable zone based on user-input dataframe
+        """ Calculates exoplanet parameters based on user-input data
+
         Args:
             pl_data (pd.DataFrame): Table of planetary data (TODO - list required columns)
             optimistic (bool, optional): Whether to use an optimistic habitable zone (False for conservative)
@@ -131,10 +132,10 @@ class ArchiveExplorer:
         """ Classifies a planet's type based on its density
 
         Args:
-            density_ratio: A pandas series or numpy array of density ratios (float)
+            density_ratio (array-like): A pandas series or numpy array of density ratios (float)
         
         Returns:
-            String classificatoin of density (Gas planet, water, world, or Rocky planet)
+            String classification of density (Gas planet, water, world, or Rocky planet)
         """
         if density_ratio < 0.4:
             return "Gas"
@@ -144,6 +145,20 @@ class ArchiveExplorer:
             return "Rocky"
     
     def _hab_zone(self, data, optimistic=False):
+        """Calculates exoplanet habitable zone based on user-input dataframe
+
+        The conservative habitable zone is given by the runaway greenhouse and 
+        maximum greenhouse limits in Kopparapu et al. 2013.
+        The optimistic habitable zone is given by the Venus and early Mars limits.
+
+        Args:
+            data (pd.DataFrame): A dataframe with planetary parameters
+            optimistic (bool): Whether to use an optimistic habitable zone calculation (default False)
+        
+        Returns: pd.DataFrame
+            'hz_inner' (AU), 'hz_outer' (AU), and 'in_hz' columns indicating whether 
+            the planet is in the habitable zone
+        """
 
         params = self.opt_params if optimistic else self.cons_params
         
