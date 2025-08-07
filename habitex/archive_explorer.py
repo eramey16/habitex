@@ -106,11 +106,14 @@ class ArchiveExplorer:
             tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
             tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
         
-        tab = self.calc_expo(tab, optimistic=optimistic)
-        # tab = tab.join(tab, new_data)
+        new_data = self.calc_exo(tab, optimistic=True)
+
+        tab = tab.join(new_data)
+
+        self.results = tab
         return tab
     
-    def calc_expo(self, pl_data, optimistic=False):
+    def calc_exo(self, pl_data, optimistic=False):
         """ Calculates exoplanet parameters based on user-input data
 
         Args:
@@ -118,15 +121,18 @@ class ArchiveExplorer:
             optimistic (bool, optional): Whether to use an optimistic habitable zone (False for conservative)
         """
         # Calculate orbital distance and add to table
-        pl_data['pl_orbdist'] = self._orb_dist(pl_data)
-        pl_data['pl_type'] = pl_data['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
+        new_data = pd.DataFrame()
+        new_data['pl_orbdist'] = self._orb_dist(pl_data)
+        new_data['pl_type'] = pl_data['pl_dens'].apply(lambda x: self._classify_planet_by_density(x) 
                                                   if pd.notnull(x) else None)
 
-        # Calculate the habitable zone and add to the table
-        pl_data = pl_data.join(self._hab_zone(pl_data, optimistic=optimistic))
-        self.results = pl_data
+        # Calculate the habitable zone for conservative and optimistic and add to the table
+        hz_data_opt = self._hab_zone(pl_data.join(new_data), optimistic=True)
+        hz_data_cons = self._hab_zone(pl_data.join(new_data), optimistic=False)
 
-        return pl_data
+        new_data = new_data.join(hz_data_opt).join(hz_data_cons)
+
+        return new_data
     
     def _classify_planet_by_density(self, density_ratio):
         """ Classifies a planet's type based on its density
@@ -181,10 +187,10 @@ class ArchiveExplorer:
         outer_rad = np.sqrt((10**data.st_lum)/outer_stflux)
 
         new_data = pd.DataFrame()
-
-        new_data['hz_inner'] = inner_rad
-        new_data['hz_outer'] = outer_rad
-        new_data['in_hz'] = (np.array(pl_stflux > outer_stflux) & 
+        tag = '_opt' if optimistic else '_cons'
+        new_data['hz_inner'+tag] = inner_rad
+        new_data['hz_outer'+tag] = outer_rad
+        new_data['in_hz'+tag] = (np.array(pl_stflux > outer_stflux) & 
                          np.array(pl_stflux < inner_stflux))
         return new_data
     
