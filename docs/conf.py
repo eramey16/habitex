@@ -11,8 +11,8 @@ sys.path.insert(0, os.path.abspath('../habitex/'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'habitex'
-copyright = '2025, Emily Everetts, Claire Rogers, Pranav Premnath, Madeline Gutierrez'
-author = 'Emily Everetts, Claire Rogers, Pranav Premnath, Madeline Gutierrez'
+copyright = '2025, Emily Everetts, Claire Rogers, Pranav Premnath, Madeline Maldonado Gutierrez'
+author = 'Emily Everetts, Claire Rogers, Pranav Premnath, Madeline Maldonado Gutierrez'
 release = '0.0.1'
 root_doc = 'index'
 
