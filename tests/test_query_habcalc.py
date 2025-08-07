@@ -1,9 +1,9 @@
 import numpy as np
-import archive_explorer
+from habitex import ArchiveExplorer
 import pytest
 
 def test_query_habcalc():
-    explorer = archive_explorer.ArchiveExplorer(optimistic=True)
+    explorer = ArchiveExplorer(optimistic=True)
     gj876 = explorer.query_exo(hostname='GJ 876')
     assert gj876['pl_type'][2] == 'Water'
     assert gj876['in_hz_cons'][2]
@@ -11,7 +11,7 @@ def test_query_habcalc():
 test_query_habcalc()
 
 def test_query_paper():
-    explorer = archive_explorer.ArchiveExplorer(optimistic=False)
+    explorer = ArchiveExplorer(optimistic=False)
     rosenthal_table = explorer.query_exo(table='ps',paper='Rosenthal et al. 2021')
     assert len(rosenthal_table) == 9
     assert min(rosenthal_table['dec'].values) == pytest.approx(-1.164,abs=1e-3)

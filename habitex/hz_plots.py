@@ -3,10 +3,8 @@ from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import (AnchoredOffsetbox, AuxTransformBox,
                                   DrawingArea, TextArea, VPacker)
-import astropy
 from matplotlib.patches import Circle, Ellipse, Annulus
-import archive_explorer
-import hab_zone
+from habitex import ArchiveExplorer
 
 
 class PlotHZ:
@@ -38,7 +36,7 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
+        exp = ArchiveExplorer()
         if hostname:
             tab = exp.query_exo(hostname=hostname)
         else:
@@ -60,20 +58,15 @@ class PlotHZ:
         eccen = tab["pl_orbeccen"].iloc[0]
         sma = tab["pl_orbsmax"].iloc[0]
 
-        eval = hab_zone.HabZoneEvaluator()
+        cons_in = tab['hz_inner_cons'].iloc[0]
+        cons_out = tab['hz_outer_cons'].iloc[0]
 
-        cons_data = eval.conservative_habzone(hostname=hostname)
-        opt_data = eval.optimistic_habzone(hostname=hostname)
+        opt_in = tab['hz_inner_opt'].iloc[0]
+        opt_out = tab['hz_outer_opt'].iloc[0]
 
-        if cons_data.empty or opt_data.empty:
+        if tab['in_hz_opt'].iloc[0] == False and tab['in_hz_cons'].iloc[0] == False:
             print(f"Habitable zone data not found for {hostname}.")
             return
-
-        cons_in = cons_data['Conservative Inner Radius (AU)'].iloc[0]
-        cons_out = cons_data['Conservative Outer Radius (AU)'].iloc[0]
-
-        opt_in = opt_data['Optimistic Inner Radius (AU)'].iloc[0]
-        opt_out = opt_data['Optimistic Outer Radius (AU)'].iloc[0]
 
         cons_zone = Annulus((0, 0), cons_out, cons_out - cons_in, color='green', alpha=0.8, label="Conservative HZ")
         opt_zone = Annulus((0, 0), opt_out, opt_out - opt_in, color='green', alpha=0.4, label="Optimistic HZ")
@@ -119,19 +112,10 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
-        if hostname:
-            tab = exp.query_exo(hostname=hostname)
-        else:
-            tab = exp.query_exo()
+        exp = ArchiveExplorer()
+        tab = exp.query_exo()
 
-        if tab.empty:
-            print("No matching exoplanet data found.")
-            return
-
-        eval = hab_zone.HabZoneEvaluator()
-        table = eval.conservative_habzone()
-        cons_table = table[table['In Conservative Habitable Zone'] == True]
+        cons_table = tab[tab['in_hz_cons'] == True]
         cons_mass = cons_table['pl_msinie']
         cons_radii = cons_table['pl_rade']
         cons_temp = cons_table['st_teff'].values
@@ -157,19 +141,10 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = archive_explorer.ArchiveExplorer()
-        if hostname:
-            tab = exp.query_exo(hostname=hostname)
-        else:
-            tab = exp.query_exo()
-
-        if tab.empty:
-            print("No matching exoplanet data found.")
-            return
-
-        eval = hab_zone.HabZoneEvaluator()
-        table2 = eval.optimistic_habzone()
-        opt_table = table2[table2['In Optimistic Habitable Zone'] == True]
+        exp = ArchiveExplorer()
+        tab = exp.query_exo()
+        
+        opt_table = tab[tab['in_hz_opt'] == True]
         opt_mass = opt_table['pl_msinie']
         opt_radii = opt_table['pl_rade']
         opt_temp = opt_table['st_teff'].values

@@ -109,7 +109,7 @@ class ArchiveExplorer:
             tab.sort_values(by='pl_pubdate', ascending=False, ignore_index=True, inplace=True)
             tab.drop_duplicates(subset=['gaia_id', 'pl_name'], keep='first', inplace=True, ignore_index=True)
         
-        new_data = self.calc_exo(tab, optimistic=True)
+        new_data = self.calc_exo(tab)
 
         tab = tab.join(new_data)
 
