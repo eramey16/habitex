@@ -1,0 +1,45 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: HabitEx
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Emily
+    family-names: Everetts
+    email: emily_ramey@berkeley.edu
+    affiliation: UC Berkeley
+  - given-names: Claire
+    name-particle: J
+    family-names: Rogers
+    email: c.j.rogers@uci.edu
+    affiliation: UC Irvine
+    orcid: 'https://orcid.org/0009-0005-5520-1648'
+  - given-names: Pranav
+    family-names: Premnath
+    email: premnatp@uci.edu
+    affiliation: UC Irvine
+  - given-names: Madeline
+    family-names: Maldonado Gutierrez
+    email: mjm2418@barnard.edu
+    affiliation: Barnard College
+repository-code: 'https://github.com/eramey16/habitex'
+abstract: >-
+  habitex is a Python-based tool designed to vet and
+  characterize potentially habitable exoplanets using public
+  data from the NASA Exoplanet Archive. The pipeline
+  evaluates exoplanets based on their stellar and orbital
+  properties to determine whether they reside in a
+  conservative or optimistic habitable zone, and supports
+  custom filtering for survey planning, target selection,
+  and comparative exoplanetology.
+keywords:
+  - exoplanet
+  - astronomy
+  - python
+license: MIT
+version: 0.0.2
+date-released: '2025-08-06'
