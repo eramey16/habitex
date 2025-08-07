@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="(https://github.com/eramey16/habitex/blob/develop/habitexlogo.png)" width="200"/>
+  <img src="/habitexlogo.png" width="200"/>
 </p>
 
-**habitex** is a Python-based tool designed to vet and characterize potentially habitable exoplanets using public data from the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/). The pipeline evaluates exoplanets based on their stellar and orbital properties to determine whether they reside in a **conservative** or **optimistic habitable zone**, and supports custom filtering for survey planning, target selection, and comparative exoplanetology.
+**HabitEx** is a Python-based tool designed to vet and characterize potentially habitable exoplanets using public data from the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/). The pipeline evaluates exoplanets based on their stellar and orbital properties to determine whether they reside in a **conservative** or **optimistic habitable zone**, and supports custom filtering for survey planning, target selection, and comparative exoplanetology.
 
 ---
 
 ## Objective
 
-For each confirmed exoplanet, habitex:
+For each confirmed exoplanet, HabitEx:
 
 - Retrieves key planetary and stellar parameters using `astroquery`
 - Computes whether the planet lies within the conservative or optimistic habitable zone using models from Kopparapu et al. (2013, 2014)
@@ -35,7 +35,7 @@ For each confirmed exoplanet, habitex:
 ### Planetary Density Estimation
 
 - If both mass and radius are known, density is calculated
-- Rocky planets may be flagged based on radius or density thresholds
+- Rocky planets, water worlds, and gas planets are identified based on density thresholds
 
 ### Custom Filtering
 
@@ -68,7 +68,7 @@ Users may apply custom filters on:
 
 ## Installation
 
-Habitex can be installed via pip:
+HabitEx can be installed via pip:
 
 ```bash
 pip install habitex
