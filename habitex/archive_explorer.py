@@ -86,7 +86,12 @@ class ArchiveExplorer:
 
         # Other cuts
         if mandr: cuts.append("pl_masse is not null and pl_rade is not null")
-        if hostname is not None: cuts.append(f"hostname like '{hostname}'")
+        if hostname is not None:
+                if isinstance(hostname, list):
+                    host_cuts = " or ".join([f"hostname like '{h}'" for h in hostname])
+                    cuts.append(f"({host_cuts})")
+                else:
+                    cuts.append(f"hostname like '{hostname}'")
         if t_eff is not None: cuts.append(_range('st_teff', t_eff))
         if dec is not None: cuts.append(_range('dec', dec))
         if period is not None: cuts.append(_range('pl_orbper', period))
