@@ -26,7 +26,8 @@ class PlotHZ:
         while the planet orbit will be an ellipse depending on eccentricity
 
         Args:
-            hostname (string)
+            hostname: Name of host star
+            pl_name: Most commonly used planet name
             sma (float): Semi-major axis in AU
             eccen (float): eccentricity
             cons_in: Inner bound of conservative habitable zone in AU
@@ -35,7 +36,7 @@ class PlotHZ:
             opt_out: Outer bound of optimistic habitable zone in AU
         
         Returns:
-            pyplot
+            matplotlib.pyplot
         """
         exp = archive_explorer.ArchiveExplorer()
         if hostname:
@@ -98,7 +99,7 @@ class PlotHZ:
 
         ax.plot(0, 0, marker='*', markersize=10, color='gold', zorder=5)
 
-        max_radius = max(cons_out, opt_out, sma * (1 + eccen))  # add margin for orbit
+        max_radius = max(cons_out, opt_out, sma * (1 + eccen))  #so that we can see all zones and the orbit
         ax.set_xlim(-1.2*max_radius, 1.2*max_radius)
         ax.set_ylim(-1.2*max_radius, 1.2*max_radius)
         ax.legend()
@@ -140,7 +141,7 @@ class PlotHZ:
         plt.yscale('log')
         plt.xlabel('Minimum Mass (M$_{\oplus}$)')
         plt.ylabel('Planet Radius (R$_{\oplus}$)')
-        plt.colorbar(label='Host Star $T_{eff}$')
+        plt.colorbar(label='Host Star T$_{eff}$')
         plt.title('Mass-Radius Relation for Planets in the Conservative HZ')
         plt.show()
 
@@ -178,9 +179,10 @@ class PlotHZ:
         plt.yscale('log')
         plt.xlabel('Minimum Mass (M$_{\oplus}$)')
         plt.ylabel('Planet Radius (R$_{\oplus}$)')
-        plt.colorbar(label='Host Star $T_{eff}$')
+        plt.colorbar(label='Host Star T$_{eff}$')
         plt.title('Mass-Radius Relation for Planets in the Optimistic HZ')
         plt.show()
 
         return
     
+   
