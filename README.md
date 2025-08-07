@@ -79,7 +79,6 @@ pip install habitex
 ## Dependencies
 
 - `astroquery`
-- `astropy`
 - `pandas`
 - `numpy`
 - `matplotlib`
