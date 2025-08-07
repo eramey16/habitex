@@ -71,7 +71,10 @@ class ArchiveExplorer:
         Returns:
             results (pd.DataFrame): Results of query as a pandas dataframe.
             Orbital distance will be a new column *pl_orbdist* (in AU), 
-            and planet density classification will be in column *pl_type* (as string)
+            planet density classification will be in column *pl_type* (as string)
+
+            Habitable zone variables will be in 'hz_inner_<opt/cons>', 
+            'hz_outer_<opt/cons>', and 'in_hz_<opt/cons>' columns
         """
         
         # Add default cuts, unless user specified
