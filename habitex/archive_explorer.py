@@ -34,7 +34,7 @@ class ArchiveExplorer:
         pass
 
     def query_exo(self, table='pscomppars', hostname=None, t_eff=None, dec=None, 
-                 period=None, mandr=False, paper=None, optimistic=False, cols=None):
+                 period=None, mandr=False, paper=None, cols=None):
         """ Queries the NASA Exoplanet archive
 
         Calculates orbital distance and planet density and adds them to query results
@@ -71,7 +71,10 @@ class ArchiveExplorer:
         Returns:
             results (pd.DataFrame): Results of query as a pandas dataframe.
             Orbital distance will be a new column *pl_orbdist* (in AU), 
-            and planet density classification will be in column *pl_type* (as string)
+            planet density classification will be in column *pl_type* (as string)
+
+            Habitable zone variables will be in 'hz_inner_<opt/cons>', 
+            'hz_outer_<opt/cons>', and 'in_hz_<opt/cons>' columns
         """
         
         # Add default cuts, unless user specified
@@ -113,7 +116,7 @@ class ArchiveExplorer:
         self.results = tab
         return tab
     
-    def calc_exo(self, pl_data, optimistic=False):
+    def calc_exo(self, pl_data):
         """ Calculates exoplanet parameters based on user-input data
 
         Args:
