@@ -113,8 +113,9 @@ class ArchiveExplorer:
 
         tab = tab.join(new_data)
 
+        tab.reset_index(inplace=True, drop=True)
         self.results = tab
-        return tab
+        return self.results
     
     def calc_exo(self, pl_data):
         """ Calculates exoplanet parameters based on user-input data
