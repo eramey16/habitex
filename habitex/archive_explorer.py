@@ -132,15 +132,7 @@ class ArchiveExplorer:
         else:
             return "Rocky"
     
-    # def _hab_eq(flux, t_star, orb_eccen, a, b, c, d):
-    #     pass
-    
     def _hab_zone(self, data):
-        # if self.teff==None:
-        #     explorer = archive_explorer.ArchiveExplorer()
-        #     data = explorer.query_exo(hostname=hostname, t_eff=t_eff, dec=dec, period=period, mandr=mandr)
-        # else:
-        #     data = pd.DataFrame([{'st_teff':self.teff,'st_lum':self.stell_lum,'pl_orbeccen':self.pl_e}])
         
         semimajor = data.pl_orbdist.astype(float) # TODO: Need to talk about whether to use archived or calculated
         t_star = data.st_teff.astype(float) - 5780 # TODO: why is it -5780? I thought already in Kelvin?
