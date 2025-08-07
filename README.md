@@ -90,4 +90,7 @@ pip install habitex
 - Kopparapu et al. (2013), ApJ, 765, 131  
 - Kopparapu et al. (2014), ApJ, 787, L29
 - Luque et al. (2022), Science, 377, 6611
-- NASA Exoplanet Archive API: https://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html  
+- NASA Exoplanet Archive API: https://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html
+
+[![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16756123.svg)](https://doi.org/10.5281/zenodo.16756123)
