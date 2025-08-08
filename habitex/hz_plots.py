@@ -36,70 +36,95 @@ class PlotHZ:
         Returns:
             matplotlib.pyplot
         """
-        exp = ArchiveExplorer()
+        planets_data = []
+
         if hostname:
+            exp = ArchiveExplorer()
             tab = exp.query_exo(hostname=hostname)
-        else:
-            tab = exp.query_exo()
 
-        if tab.empty:
-            print("No matching exoplanet data found.")
-            return
-
-        if pl_name:
-            planet_row = tab[tab["pl_name"] == pl_name]
-            if planet_row.empty:
-                print(f"No planet named {pl_name} found for {hostname}.")
+            if tab.empty:
+                print("No matching exoplanet data found.")
                 return
-            tab = planet_row
+
+            if pl_name:
+                tab = tab[tab["pl_name"] == pl_name]
+                if tab.empty:
+                    print(f"No planet named {pl_name} found for {hostname}.")
+                    return
+
+            for _, row in tab.reset_index(drop=True).iterrows():
+                planets_data.append({
+                    "name": row["pl_name"],
+                    "sma": row["pl_orbsmax"],
+                    "eccen": row["pl_orbeccen"],
+                    "cons_in": row.get("hz_inner_cons"),
+                    "cons_out": row.get("hz_outer_cons"),
+                    "opt_in": row.get("hz_inner_opt"),
+                    "opt_out": row.get("hz_outer_opt")
+                })
+
         else:
-            tab = tab.iloc[[0]]  # default to first planet
+            #for custom user data
+            if None in (pl_name, sma, eccen):
+                print("For custom data, at least pl_name, sma, and eccen must be provided.")
+                return
 
-        eccen = tab["pl_orbeccen"].iloc[0]
-        sma = tab["pl_orbsmax"].iloc[0]
+            planets_data.append({
+                "name": pl_name,
+                "sma": sma,
+                "eccen": eccen,
+                "cons_in": cons_in,
+                "cons_out": cons_out,
+                "opt_in": opt_in,
+                "opt_out": opt_out
+            })
 
-        cons_in = tab['hz_inner_cons'].iloc[0]
-        cons_out = tab['hz_outer_cons'].iloc[0]
+        #plot all planets
+        for pdata in planets_data:
+            #hz
+            fig, ax = plt.subplots()
 
-        opt_in = tab['hz_inner_opt'].iloc[0]
-        opt_out = tab['hz_outer_opt'].iloc[0]
+            if pdata["cons_in"] is not None and pdata["cons_out"] is not None:
+                cons_zone = Annulus((0, 0), pdata["cons_out"],
+                                    pdata["cons_out"] - pdata["cons_in"],
+                                    color='green', alpha=0.8, label="Conservative HZ")
+                ax.add_patch(cons_zone)
 
-        if tab['in_hz_opt'].iloc[0] == False and tab['in_hz_cons'].iloc[0] == False:
-            print(f"Habitable zone data not found for {hostname}.")
-            return
+            if pdata["opt_in"] is not None and pdata["opt_out"] is not None:
+                opt_zone = Annulus((0, 0), pdata["opt_out"],
+                                pdata["opt_out"] - pdata["opt_in"],
+                                color='green', alpha=0.4, label="Optimistic HZ")
+                ax.add_patch(opt_zone)
 
-        cons_zone = Annulus((0, 0), cons_out, cons_out - cons_in, color='green', alpha=0.8, label="Conservative HZ")
-        opt_zone = Annulus((0, 0), opt_out, opt_out - opt_in, color='green', alpha=0.4, label="Optimistic HZ")
+            #orbit
+            a = pdata["sma"]
+            b = np.sqrt(1 - pdata["eccen"]**2) * a
+            focus_offset = pdata["eccen"] * a
+            orbit = Ellipse((-focus_offset, 0), 2 * a, 2 * b,
+                            color='black', fill=False, label="Planet Orbit")
+            ax.add_patch(orbit)
 
-        # Orbital parameters
-        a = sma  # semi-major axis
-        b = np.sqrt(1 - eccen**2) * a  # semi-minor axis
-        focus_offset = eccen * a  # distance from center to star (focus)
-        orbit = Ellipse((-focus_offset, 0), 2 * a, 2 * b, color='black', fill=False, label="Planet Orbit")
+            #star
+            ax.plot(0, 0, marker='*', markersize=10, color='gold', zorder=5, label="Host Star")
 
+            ax.set_xlabel("Distance (AU)")
+            ax.set_ylabel("Distance (AU)")
+            ax.set_aspect('equal')
 
-        fig, ax = plt.subplots()
+            #to see all content
+            max_items = [a * (1 + pdata["eccen"])]
+            if pdata["opt_out"] is not None:
+                max_items.append(pdata["opt_out"])
+            elif pdata["cons_out"] is not None:
+                max_items.append(pdata["cons_out"])
+            max_radius = max(max_items)
 
-        ax.add_patch(cons_zone)
-        ax.add_patch(opt_zone)
+            ax.set_xlim(-1.2 * max_radius, 1.2 * max_radius)
+            ax.set_ylim(-1.2 * max_radius, 1.2 * max_radius)
+            ax.legend()
 
-        ax.add_patch(orbit)
-
-        ax.set_xlabel("Distance (AU)")
-        ax.set_ylabel("Distance (AU)")
-
-        ax.set_aspect('equal')
-
-        ax.plot(0, 0, marker='*', markersize=10, color='gold', zorder=5)
-
-        max_radius = max(cons_out, opt_out, sma * (1 + eccen))  #so that we can see all zones and the orbit
-        ax.set_xlim(-1.2*max_radius, 1.2*max_radius)
-        ax.set_ylim(-1.2*max_radius, 1.2*max_radius)
-        ax.legend()
-
-        plt.title(f"Habitable Zone and Orbit for {pl_name}")
-        plt.show()
-
+            plt.title(f"Habitable Zone and Orbit for {pdata['name']}")
+            plt.show()
         return
 
     def plot_massradius_conservative(self, hostname=None):
