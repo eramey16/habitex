@@ -127,12 +127,12 @@ class PlotHZ:
             plt.show()
         return
 
-    def plot_massradius_conservative(self, hostname=None):
+    def plot_massradius_conservative(self):
         """Plot Mass-Radius Diagram 
-        Plot the mass radius diagram for the conservative habitable zone 
+        Plot the mass radius diagram for planets in the conservative habitable zone 
 
         Args:
-            hostname (string)
+            None
         
         Returns:
             matplotlib.pyplot
@@ -156,12 +156,12 @@ class PlotHZ:
 
         return
     
-    def plot_massradius_optimistic(self, hostname=None):
+    def plot_massradius_optimistic(self):
         """Plot Mass-Radius Diagram 
-        Plot the mass radius diagram for the optimistic habitable zone 
+        Plot the mass radius diagram for planets in the optimistic habitable zone 
 
         Args:
-            hostname (string)
+            None
         
         Returns:
             matplotlib.pyplot
